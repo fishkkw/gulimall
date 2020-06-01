@@ -1,0 +1,20 @@
+package com.atguigu.gulimall.product.service;
+
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.atguigu.common.utils.PageUtils;
+import com.atguigu.gulimall.product.entity.BaseCatalog1Entity;
+
+import java.util.Map;
+
+/**
+ * 一级分类表
+ *
+ * @author wk
+ * @email wk@gmail.com
+ * @date 2020-05-31 21:41:39
+ */
+public interface BaseCatalog1Service extends IService<BaseCatalog1Entity> {
+
+    PageUtils queryPage(Map<String, Object> params);
+}
+
