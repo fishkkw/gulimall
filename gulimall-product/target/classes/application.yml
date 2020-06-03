@@ -1,9 +1,19 @@
+server:
+  port: 8000
+
 spring:
   datasource:
     url: jdbc:mysql://192.168.43.163:3306/gmall_pms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     username: root
     password: kw181619
     driver-class-name: com.mysql.cj.jdbc.Driver
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+        namespace: b6abf775-567d-4ab5-899d-0a52760c24ac
+  application:
+    name: gulimall-product
 
 mybatis-plus:
     mapper-locations: classpath:/mapper/**/*.xml

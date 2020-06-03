@@ -1,9 +1,15 @@
 package com.atguigu.gulimall.product.controller;
 
-import java.util.Arrays;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.atguigu.gulimall.product.entity.BaseCatalog2Entity;
+import com.atguigu.gulimall.product.entity.BaseCatalog3Entity;
+import com.atguigu.gulimall.product.service.BaseCatalog2Service;
+import com.atguigu.gulimall.product.service.BaseCatalog3Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,15 +37,49 @@ public class BaseCatalog1Controller {
     @Autowired
     private BaseCatalog1Service baseCatalog1Service;
 
+    @Autowired
+    private BaseCatalog2Service baseCatalog2Service;
+
+    @Autowired
+    private BaseCatalog3Service baseCatalog3Service;
     /**
      * 列表
      */
-    @RequestMapping("/list")
+    @RequestMapping("/list/tree")
     //@RequiresPermissions("product:basecatalog1:list")
-    public R list(@RequestParam Map<String, Object> params){
-        PageUtils page = baseCatalog1Service.queryPage(params);
+    public R list() {
+        List<BaseCatalog1Entity> baseCatalog1s = baseCatalog1Service.list();
+        List<BaseCatalog2Entity> baseCatalog2s = baseCatalog2Service.list();
+        List<BaseCatalog3Entity> baseCatalog3s = baseCatalog3Service.list();
 
-        return R.ok().put("page", page);
+
+        List<JSONObject> jsonObjects = baseCatalog1s.stream().map(baseCatalog1Entity -> {
+            JSONObject json = new JSONObject();
+            json.put("id", baseCatalog1Entity.getId());
+            json.put("name", baseCatalog1Entity.getName());
+            json.put("child", baseCatalog2s.stream().filter(baseCatalog2Entity ->
+                    baseCatalog2Entity.getCatalog1Id() == baseCatalog1Entity.getId()).map(
+                    baseCatalog2Entity -> {
+                        JSONObject jsonObject = new JSONObject();
+                        jsonObject.put("id", baseCatalog2Entity.getId());
+                        jsonObject.put("name", baseCatalog2Entity.getName());
+                        jsonObject.put("child", baseCatalog3s.stream().filter(baseCatalog3Entity ->
+                                baseCatalog3Entity.getCatalog2Id() == Long.valueOf(baseCatalog2Entity.getId()))
+                                .map(baseCatalog3Entity ->
+                                        {
+                                            JSONObject jsonObject2 = new JSONObject();
+                                            jsonObject2.put("id", baseCatalog3Entity.getId());
+                                            jsonObject2.put("name", baseCatalog3Entity.getName());
+                                            return jsonObject2;
+                                        }
+                                ).collect(Collectors.toList()));
+                        jsonObject.put("catalog1Id", baseCatalog2Entity.getCatalog1Id());
+                        return jsonObject;
+                    }
+            ).collect(Collectors.toList()));
+            return json;
+        }).collect(Collectors.toList());
+        return R.ok().put("baseCata", jsonObjects);
     }
 
 
