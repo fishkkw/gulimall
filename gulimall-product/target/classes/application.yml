@@ -10,8 +10,7 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 127.0.0.1:8848
-        namespace: b6abf775-567d-4ab5-899d-0a52760c24ac
+        server-addr: 192.168.43.163:8848
   application:
     name: gulimall-product
 
